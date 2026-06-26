@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Media del Zújar | Desafía tus límites</title>
+    
+    <!-- ==========================================
+         1. DEPENDENCIAS EXTERNAS (CDN)
+         ========================================== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- ==========================================
+         2. CONFIGURACIÓN TAILWIND (Tema Corporativo)
+         ========================================== -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            black: '#050505',
+                            dark: '#111111',
+                            green: '#10b981', 
+                            orange: '#f97316', 
+                            blue: '#0ea5e9',   
+                            white: '#ffffff',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-green': '0 0 20px rgba(16, 185, 129, 0.3)',
+                        'neon-orange': '0 0 20px rgba(249, 115, 22, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ==========================================
+         3. ESTILOS CSS PERSONALIZADOS
+         ========================================== -->
+    <style>
+        /* Base */
+        body { background-color: #050505; color: #ffffff; overflow-x: hidden; }
+
+        /* Sistema SPA (Single Page Application) */
+        .page-view { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .page-view.active { display: block; opacity: 1; }
+
+        /* Tipografía y Formas */
+        .text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.2); }
+        .skew-box { transform: skew(-5deg); }
+        .skew-content { transform: skew(5deg); }
+
+        /* Contenedores Específicos */
+        .chart-container { position: relative; height: 350px; width: 100%; }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #059669; }
+
+        /* Efectos de Interacción (Hover y Revelado) */
+        .btn-hover-fx { position: relative; overflow: hidden; }
+        .btn-hover-fx::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.4s ease;
+        }
+        .btn-hover-fx:hover::after { left: 100%; }
+        
+        .img-reveal { transition: all 0.5s ease; }
+        .img-reveal:hover { transform: scale(1.05); filter: grayscale(0%); z-index: 10; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-green selection:text-black">
+
+    <!-- ==========================================
+         4. INTERFAZ: BARRA DE NAVEGACIÓN
+         ========================================== -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+        <div class="absolute inset-0 bg-brand-black/80 backdrop-blur-md border-b border-white/5"></div>
+        <div class="max-w-7xl mx-auto px-4 relative flex items-center justify-between h-20">
+            <!-- Logo Brand -->
+            <a href="#" onclick="navigate('home')" class="flex items-center gap-3 group pr-8 lg:pr-12 shrink-0">
+                <div class="w-10 h-10 bg-brand-green skew-box flex items-center justify-center">
+                    <span class="font-display font-black text-black skew-content text-xl italic">Z</span>
+                </div>
+                <span class="font-display font-black text-lg md:text-xl tracking-wider uppercase whitespace-nowrap">La Media<span class="text-brand-green"> del Zújar</span></span>
+            </a>
+
+            <!-- Menú Principal (Desktop) -->
+            <div class="hidden lg:flex items-center gap-6 font-display font-bold text-sm tracking-widest uppercase w-full justify-end pr-6">
+                <button onclick="navigate('recorridos')" class="hover:text-brand-green transition">Recorridos</button>
+                <button onclick="navigate('entorno')" class="hover:text-brand-blue transition">Entorno</button>
+                <button onclick="navigate('multimedia')" class="hover:text-brand-orange transition">Multimedia</button>
+                <button onclick="navigate('reglamento')" class="hover:text-white/70 transition">Reglamento</button>
+                <button onclick="navigate('conocenos')" class="hover:text-brand-green transition">Conócenos</button>
+                <button onclick="navigate('coach')" class="text-brand-green hover:text-white transition flex items-center gap-1">
+                    <i data-lucide="cpu" class="w-4 h-4"></i> IA Coach
+                </button>
+            </div>
+
+            <!-- Botón CTA (Call to Action) -->
+            <button onclick="navigate('inscripcion')" class="hidden md:block bg-brand-orange text-white px-6 py-3 font-display font-black uppercase tracking-wider skew-box btn-hover-fx shadow-neon-orange hover:bg-orange-500 transition-colors shrink-0">
+                <span class="block skew-content">Inscríbete</span>
+            </button>
+
+            <!-- Toggle Menú Móvil (Pendiente lógica JS) -->
+            <button class="lg:hidden text-white p-2">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         5. INTERFAZ: CONTENEDOR VISTAS SPA
+         ========================================== -->
+    <main id="app-content" class="pt-20 min-h-screen">
+
+        <!-- ================= VISTA: INICIO ================= -->
+        <section id="page-home" class="page-view active">
+            <div class="relative min-h-[85vh] flex items-center group overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img src="148065.jpg" onerror="this.src='https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=2000&auto=format&fit=crop'" class="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition duration-1000" alt="Arco de salida">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/70 to-transparent"></div>
+                    <div class="absolute inset-0 bg-brand-green/10 mix-blend-overlay"></div>
+                </div>
+                
+                <div class="relative z-10 max-w-7xl mx-auto px-4 w-full">
+                    <div class="max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark/80 backdrop-blur border border-white/10 rounded-full mb-6 font-display text-sm font-bold tracking-widest uppercase">
+                            <span class="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
+                            24 Noviembre, 2026
+                        </div>
+                        <h1 class="font-display font-black text-6xl md:text-8xl leading-[0.9] uppercase tracking-tighter mb-6 drop-shadow-2xl">
+                            Domina el <br>
+                            <span class="text-brand-green drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">Zújar</span>
+                        </h1>
+                        <p class="text-xl text-gray-300 mb-10 max-w-xl border-l-4 border-brand-blue pl-4 backdrop-blur-sm bg-black/20 p-2 rounded-r-lg">
+                            Desde Villanueva de la Serena hasta el Río Zújar. Tres distancias. Un reto urbano y natural sin precedentes en la comarca.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="navigate('inscripcion')" class="bg-brand-green text-black px-8 py-4 font-display font-black uppercase tracking-wider text-lg skew-box btn-hover-fx shadow-neon-green">
+                                <span class="block skew-content">Aceptar el Reto</span>
+                            </button>
+                            <button onclick="navigate('recorridos')" class="bg-transparent border-2 border-white/20 text-white px-8 py-4 font-display font-bold uppercase tracking-wider text-lg skew-box hover:border-white hover:bg-white/10 transition-colors backdrop-blur-sm">
+                                <span class="block skew-content">Ver Rutas</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute right-0 bottom-0 overflow-hidden pointer-events-none opacity-10 select-none hidden md:block">
+                    <h2 class="font-display font-black text-[200px] leading-none text-outline uppercase">Limitless</h2>
+                </div>
+            </div>
+
+            <div class="border-y border-white/5 bg-brand-dark/50 backdrop-blur">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <p class="text-center font-display text-xs font-bold tracking-widest text-gray-500 uppercase mb-6">Impulsado por</p>
+                    <div class="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="shield"></i> Ayto. Vva Serena</div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="zap"></i> Zújar Runners</div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="droplet"></i> AquaLife</div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="activity"></i> RunTech</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: RECORRIDOS ================= -->
+        <section id="page-recorridos" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="mb-12">
+                    <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-brand-green">Recorridos</h2>
+                    <p class="text-gray-400 max-w-2xl text-lg">
+                        Analiza la altimetría. Las rutas de 5K y 10K son trazados 100% urbanos rápidos. La Media Maratón abandona el asfalto hacia el Río Zújar. 
+                        <br><span class="text-brand-blue text-sm">*(Datos procesados desde archivos .GPX de carrera)*</span>
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <button onclick="updateChart('21k')" id="tab-21k" class="route-tab active px-6 py-3 font-display font-bold uppercase tracking-wider border-b-2 border-brand-green text-brand-green transition-colors">
+                        21K Media Maratón
+                    </button>
+                    <button onclick="updateChart('10k')" id="tab-10k" class="route-tab px-6 py-3 font-display font-bold uppercase tracking-wider border-b-2 border-transparent text-gray-500 hover:text-white transition-colors">
+                        10K Desafío
+                    </button>
+                    <button onclick="updateChart('5k')" id="tab-5k" class="route-tab px-6 py-3 font-display font-bold uppercase tracking-wider border-b-2 border-transparent text-gray-500 hover:text-white transition-colors">
+                        5K Popular
+                    </button>
+                </div>
+
+                <div class="bg-brand-dark border border-white/10 p-6 md:p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-green/10 blur-[100px] rounded-full pointer-events-none"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        <div class="lg:col-span-3">
+                            <div class="chart-container"><canvas id="routeChart"></canvas></div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="bg-black/50 p-6 rounded-xl border border-white/5 border-l-4 border-l-brand-green transition-colors duration-300">
+                                <div class="text-gray-500 font-display text-xs font-bold uppercase tracking-widest mb-1">Desnivel Positivo</div>
+                                <div id="val-desnivel" class="text-3xl font-display font-black text-white">190m+</div>
+                            </div>
+                            <div class="bg-black/50 p-6 rounded-xl border border-white/5 border-l-4 border-l-brand-orange transition-colors duration-300">
+                                <div class="text-gray-500 font-display text-xs font-bold uppercase tracking-widest mb-1">Altitud Máxima</div>
+                                <div id="val-altitud" class="text-3xl font-display font-black text-white">303m</div>
+                            </div>
+                            <div class="bg-black/50 p-6 rounded-xl border border-white/5 border-l-4 border-l-brand-blue transition-colors duration-300">
+                                <div class="text-gray-500 font-display text-xs font-bold uppercase tracking-widest mb-1">Avituallamientos</div>
+                                <div id="val-agua" class="text-3xl font-display font-black text-white">4 Puntos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: INSCRIPCIONES ================= -->
+        <section id="page-inscripcion" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-brand-orange">Inscripciones</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto text-lg">Asegura tu dorsal. Las plazas son limitadas y los precios cambian según la fecha.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- 5K -->
+                    <div class="bg-brand-dark border border-white/10 p-8 rounded-2xl flex flex-col">
+                        <div class="text-brand-blue font-display font-black text-2xl uppercase mb-2">5K Popular</div>
+                        <div class="text-5xl font-display font-black mb-6">12€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <ul class="space-y-4 text-gray-400 flex-1 mb-8">
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Bolsa del corredor básica</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Seguro de accidentes</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Avituallamiento meta</li>
+                        </ul>
+                        <button class="w-full bg-transparent border-2 border-brand-blue text-brand-blue py-3 font-display font-bold uppercase hover:bg-brand-blue hover:text-black transition">Seleccionar</button>
+                    </div>
+                    <!-- 21K -->
+                    <div class="bg-gradient-to-b from-brand-green/20 to-brand-dark border border-brand-green p-8 rounded-2xl flex flex-col relative transform md:-translate-y-4 shadow-neon-green">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-green text-black px-4 py-1 font-display font-bold text-xs uppercase tracking-widest rounded-full">La Reina</div>
+                        <div class="text-brand-green font-display font-black text-2xl uppercase mb-2">21K Media Maratón</div>
+                        <div class="text-5xl font-display font-black mb-2">25€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <p class="text-xs text-brand-orange mb-6 font-bold">*Sube a 30€ el 1 de Noviembre</p>
+                        <ul class="space-y-4 text-white flex-1 mb-8">
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Bolsa del corredor Premium</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Camiseta técnica Exclusiva</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Medalla Finisher</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> 5 Avituallamientos en ruta</li>
+                        </ul>
+                        <button class="w-full bg-brand-green text-black py-4 font-display font-black uppercase text-lg hover:bg-green-400 transition shadow-lg">Inscribirse Ya</button>
+                    </div>
+                    <!-- 10K -->
+                    <div class="bg-brand-dark border border-white/10 p-8 rounded-2xl flex flex-col">
+                        <div class="text-brand-orange font-display font-black text-2xl uppercase mb-2">10K Desafío</div>
+                        <div class="text-5xl font-display font-black mb-6">18€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <ul class="space-y-4 text-gray-400 flex-1 mb-8">
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> Bolsa del corredor Premium</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> Medalla Finisher</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> 2 Avituallamientos</li>
+                        </ul>
+                        <button class="w-full bg-transparent border-2 border-brand-orange text-brand-orange py-3 font-display font-bold uppercase hover:bg-brand-orange hover:text-black transition">Seleccionar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: ENTORNO E HISTORIA ================= -->
+        <section id="page-entorno" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-6 text-brand-blue">Nuestro<br>Entorno</h2>
+                        <p class="text-xl text-gray-300 mb-6 leading-relaxed">
+                            Nacida en Villanueva de la Serena, la prueba te ofrece dos caras. El 5K y 10K te sumergen en un circuito urbano, rápido y explosivo por las calles de la ciudad.
+                        </p>
+                        <p class="text-gray-500 mb-8">
+                            Si eliges la Media Maratón, abandonarás el asfalto rumbo al Río Zújar. Un terreno mixto rompepiernas con vistas únicas del cauce y la dehesa pacense.
+                        </p>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="border-l-2 border-brand-blue pl-4">
+                                <div class="font-display font-black text-3xl text-white">100%</div>
+                                <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Urbano (5K/10K)</div>
+                            </div>
+                            <div class="border-l-2 border-brand-blue pl-4">
+                                <div class="font-display font-black text-3xl text-white">Mixto</div>
+                                <div class="text-sm text-gray-500 uppercase tracking-widest font-bold">Naturaleza (21K)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=500" class="rounded-2xl w-full h-64 object-cover transform translate-y-8 grayscale hover:grayscale-0 transition duration-500" alt="Naturaleza 1">
+                        <img src="https://images.unsplash.com/photo-1470071131384-001b85755f9a?auto=format&fit=crop&q=80&w=500" class="rounded-2xl w-full h-64 object-cover grayscale hover:grayscale-0 transition duration-500" alt="Naturaleza 2">
+                    </div>
+                </div>
+
+                <div class="mt-20 bg-brand-dark/50 border border-white/10 p-8 md:p-12 rounded-3xl relative overflow-hidden">
+                    <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-blue/10 blur-[80px] rounded-full pointer-events-none"></div>
+                    <h3 class="font-display font-black text-3xl md:text-4xl text-white mb-6 uppercase tracking-tighter">La Cuna de la Carrera: <span class="text-brand-blue">Villanueva de la Serena</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-400 leading-relaxed">
+                        <div>
+                            <p class="mb-4">Con orígenes que se remontan al poblado romano de <em>Portículus</em>, Villanueva ha ostentado diversos nombres a lo largo de los siglos hasta consolidar su denominación hacia 1389 bajo la jurisdicción de la Orden de Alcántara.</p>
+                            <p>Cuna de figuras como Pedro de Valdivia y el escritor Felipe Trigo, esta ciudad es un crisol donde la historia y el avance se dan la mano.</p>
+                        </div>
+                        <div>
+                            <p>Hoy, Villanueva ha evolucionado hasta convertirse en una ciudad dinámica. Un poderoso núcleo de servicios y deporte que ofrece el escenario perfecto.</p>
+                            <p class="mt-4 text-white font-bold border-l-2 border-brand-blue pl-4">Su rica historia se entrelaza con el asfalto y la tierra que pisarás, uniendo el corazón urbano con la imponente belleza natural del cauce del río Zújar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: REGLAMENTO ================= -->
+        <section id="page-reglamento" class="page-view py-12">
+            <div class="max-w-4xl mx-auto px-4">
+                <h2 class="font-display font-black text-5xl md:text-6xl uppercase tracking-tighter mb-10 text-white border-b-4 border-brand-green inline-block pb-2">Reglamento 2026</h2>
+                <div class="space-y-6">
+                    <div class="bg-brand-dark p-6 rounded-xl border border-white/10 hover:border-brand-green/50 transition">
+                        <h3 class="font-display font-bold text-xl text-brand-green mb-2 flex items-center gap-3">
+                            <span class="bg-brand-green text-black w-8 h-8 flex items-center justify-center rounded">1</span> Organización y Fecha
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed pl-11">La prueba se celebrará el 24 de Noviembre de 2026, organizada por el club Zújar Runners. El cronometraje oficial estará a cargo de empresa externa mediante chip desechable.</p>
+                    </div>
+                    <!-- Mas artículos omitidos por brevedad visual -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: MULTIMEDIA ================= -->
+        <section id="page-multimedia" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="font-display font-black text-5xl md:text-6xl uppercase tracking-tighter mb-4 text-white">Galería <span class="text-brand-orange">Épica</span></h2>
+                <p class="text-gray-400 mb-10">Revive la crudeza y la gloria de ediciones pasadas con estas instantáneas reales.</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
+                        <img src="146127.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredora">
+                    </div>
+                    <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative md:col-span-2">
+                        <img src="148099.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-full h-full object-cover grayscale img-reveal" alt="Meta">
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                            <div class="bg-black/50 p-2 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="camera" class="w-8 h-8 text-white"></i></div>
+                        </div>
+                    </div>
+                    <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
+                        <img src="146339.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor esfuerzo">
+                    </div>
+                    <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
+                        <img src="146260.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor en ruta">
+                    </div>
+                    <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
+                        <div class="w-full h-full bg-brand-orange flex flex-col items-center justify-center p-6 text-center hover:bg-orange-500 transition cursor-pointer">
+                            <i data-lucide="instagram" class="w-10 h-10 text-black mb-2"></i>
+                            <span class="font-display font-bold text-black uppercase">Ver más en Instagram</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: CONÓCENOS (CD INICIA) ================= -->
+        <section id="page-conocenos" class="page-view py-12">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-white">Conoce al <span class="text-brand-green">CD Inicia</span></h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto text-lg">El alma organizadora detrás de La Media del Zújar.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="font-display font-black text-3xl text-brand-orange mb-6 uppercase tracking-wider">Escuela de Formación</h3>
+                        <p class="text-gray-300 leading-relaxed mb-6">Fundado en 2005, el <strong>Club Deportivo Inicia</strong> es una auténtica escuela de vida. Presente en atletismo, fútbol, baloncesto y voleibol, el CD Inicia lleva décadas promoviendo el deporte base.</p>
+                        <p class="text-gray-300 leading-relaxed mb-8">Con programas de "Formación en Valores", garantiza que las nuevas generaciones crezcan como personas solidarias y comprometidas.</p>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-4 text-white font-bold bg-white/5 p-4 rounded-xl border border-white/10">
+                                <i data-lucide="award" class="w-6 h-6 text-brand-orange"></i> Más de 15 años forjando atletas.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-brand-dark rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center text-center shadow-lg hover:border-brand-green transition-colors">
+                            <i data-lucide="users" class="w-8 h-8 text-brand-green mb-4"></i>
+                            <span class="font-display font-black text-xl text-white mb-2 uppercase">Deporte Base</span>
+                        </div>
+                        <div class="bg-brand-dark rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center text-center shadow-lg hover:border-brand-orange transition-colors">
+                            <i data-lucide="heart-handshake" class="w-8 h-8 text-brand-orange mb-4"></i>
+                            <span class="font-display font-black text-xl text-white mb-2 uppercase">Valores</span>
+                        </div>
+                        <div class="col-span-2 bg-gradient-to-r from-brand-green to-emerald-400 text-black rounded-3xl p-8 flex flex-col items-center justify-center text-center mt-2 shadow-neon-green transform hover:-translate-y-1 transition-transform">
+                            <span class="font-display font-black text-3xl uppercase italic">"Nosotros lo ganamos"</span>
+                            <span class="font-bold mt-2 opacity-80">El espíritu del CD Inicia</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA: IA COACH ================= -->
+        <section id="page-coach" class="page-view py-12">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="bg-brand-dark border border-brand-green/30 p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-neon-green">
+                    <div class="relative z-10 text-center mb-10">
+                        <h2 class="text-4xl md:text-5xl font-display font-black uppercase text-brand-green mb-3">
+                            <i data-lucide="bot" class="inline-block w-10 h-10 mb-2"></i><br> Tu Entrenador IA
+                        </h2>
+                        <p class="text-gray-400">Selecciona tu distancia y nivel. Genera una estrategia deportiva basada en el perfil técnico impulsada por Inteligencia Artificial.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <select id="ai-distance" class="bg-black border border-white/20 text-white rounded-xl p-4 font-display font-bold uppercase outline-none focus:border-brand-green transition">
+                            <option value="21K">Media Maratón (21K)</option>
+                            <option value="10K">10K Desafío</option>
+                            <option value="5K">5K Popular</option>
+                        </select>
+                        <select id="ai-level" class="bg-black border border-white/20 text-white rounded-xl p-4 font-display font-bold uppercase outline-none focus:border-brand-green transition">
+                            <option value="Principiante">Principiante</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Avanzado">Avanzado (Pro)</option>
+                        </select>
+                        <button onclick="generatePlan()" id="ai-btn" class="bg-brand-green text-black font-display font-black uppercase tracking-wider rounded-xl hover:bg-green-400 transition shadow-neon-green flex justify-center items-center gap-2 py-4">
+                            Generar Plan <i data-lucide="zap" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <div id="ai-loading" class="hidden text-center py-10">
+                        <div class="inline-block w-12 h-12 border-4 border-brand-green border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-brand-green font-display font-bold uppercase tracking-widest animate-pulse">Procesando telemetría...</p>
+                    </div>
+
+                    <div id="ai-result" class="hidden bg-black/50 p-6 md:p-8 rounded-2xl border border-white/10 text-gray-300"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================
+         6. INTERFAZ: FOOTER Y COLLAGE
+         ========================================== -->
+    <footer class="border-t border-white/10 bg-brand-dark pt-0 pb-8 mt-auto flex flex-col">
+        <div class="w-full flex overflow-hidden h-32 md:h-48 mb-12">
+            <img src="146221.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="148086.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="146254.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="148080.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+        </div>
+        <div class="max-w-7xl mx-auto px-4 w-full flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 opacity-50">
+                <div class="w-8 h-8 bg-white skew-box flex items-center justify-center">
+                    <span class="font-display font-black text-black skew-content text-sm italic">Z</span>
+                </div>
+                <span class="font-display font-black tracking-wider uppercase text-white">La Media<span class="text-brand-green"> del Zújar</span></span>
+            </div>
+            <div class="text-gray-600 text-sm font-display font-bold uppercase tracking-widest text-center">
+                &copy; 2026 Club Zújar Runners. La fuerza de Villanueva.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         7. LÓGICA DE LA APLICACIÓN (JAVASCRIPT)
+         ========================================== -->
+    <script>
+        // --- 7.1 INICIALIZACIÓN BÁSICA ---
+        lucide.createIcons();
+
+        // Efecto visual en la barra de navegación al hacer scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) { nav.classList.add('shadow-lg', 'shadow-brand-green/5'); } 
+            else { nav.classList.remove('shadow-lg', 'shadow-brand-green/5'); }
+        });
+
+        // --- 7.2 SISTEMA SPA (ENRUTADOR DE VISTAS) ---
+        function navigate(pageId) {
+            document.querySelectorAll('.page-view').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if(targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Carga diferida del gráfico para no afectar el rendimiento inicial
+                if(pageId === 'recorridos' && !routeChartInstance) { initChart(); }
+            }
+        }
+
+        // --- 7.3 LÓGICA DE GRÁFICOS (CHART.JS) ---
+        // Datos reales pre-procesados de los archivos .gpx
+        const routeData = {
+            '21k': {
+                name: '21K Media Maratón', color: '#10b981', distance: 21.1,
+                data: [278, 275, 279, 282, 280, 284, 287, 291, 296, 298, 303, 294, 293, 291, 286, 272, 272, 271, 269, 268, 269, 273, 272, 270, 268, 262, 260, 258, 263, 267, 263, 257, 258, 261, 259, 260, 262, 266, 268, 273, 278],
+                metrics: { desnivel: '190m+', max: '303m', agua: '4 Puntos' }
+            },
+            '10k': {
+                name: '10K Desafío', color: '#f97316', distance: 10,
+                data: [278, 275, 279, 282, 280, 284, 287, 291, 294, 296, 298, 303, 294, 293, 292, 291, 286, 280, 275, 272, 272, 271, 269, 269, 268, 269, 273, 274, 276, 273, 278],
+                metrics: { desnivel: '85m+', max: '303m', agua: '2 Puntos' }
+            },
+            '5k': {
+                name: '5K Popular', color: '#0ea5e9', distance: 5,
+                data: [278, 275, 276, 279, 282, 280, 283, 286, 290, 294, 296, 298, 303, 296, 293, 291, 293, 287, 285, 278, 276, 275, 273, 275, 278],
+                metrics: { desnivel: '45m+', max: '303m', agua: '1 Punto' }
+            }
+        };
+
+        let routeChartInstance = null;
+
+        function generateLabels(dataLength, totalDistance) {
+            return Array.from({length: dataLength}, (_, i) => ((i * totalDistance) / (dataLength - 1)).toFixed(1) + 'k');
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('routeChart').getContext('2d');
+            const initialData = routeData['21k'];
+            
+            routeChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generateLabels(initialData.data.length, initialData.distance),
+                    datasets: [{
+                        label: 'Altitud (m)', data: initialData.data, borderColor: initialData.color, borderWidth: 3,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4,
+                        pointBackgroundColor: initialData.color, pointBorderColor: 'transparent', pointRadius: 0, pointHoverRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#111', titleFont: { family: 'Outfit', size: 14 }, bodyFont: { family: 'Inter', size: 13, weight: 'bold' }, padding: 12, borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 }
+                    },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { family: 'Outfit', weight: 'bold' } }, min: 240, max: 320 },
+                        x: { grid: { display: false }, ticks: { color: '#666', font: { family: 'Outfit', weight: 'bold' }, maxTicksLimit: 8 } }
+                    }
+                }
+            });
+        }
+
+        function updateChart(distanceKey) {
+            if(!routeChartInstance) return;
+            const route = routeData[distanceKey];
+            
+            document.querySelectorAll('.route-tab').forEach(btn => {
+                btn.classList.remove('active', 'border-brand-green', 'border-brand-orange', 'border-brand-blue', 'text-brand-green', 'text-brand-orange', 'text-brand-blue');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${distanceKey}`);
+            let colorClass = 'text-brand-green', borderClass = 'border-brand-green';
+            if(distanceKey === '10k') { colorClass = 'text-brand-orange'; borderClass = 'border-brand-orange'; }
+            if(distanceKey === '5k') { colorClass = 'text-brand-blue'; borderClass = 'border-brand-blue'; }
+            
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.add('active', colorClass, borderClass);
+
+            routeChartInstance.data.labels = generateLabels(route.data.length, route.distance);
+            routeChartInstance.data.datasets[0].data = route.data;
+            routeChartInstance.data.datasets[0].borderColor = route.color;
+            
+            const hexToRgba = (hex, alpha) => `rgba(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)}, ${alpha})`;
+            routeChartInstance.data.datasets[0].backgroundColor = hexToRgba(route.color, 0.1);
+            routeChartInstance.data.datasets[0].pointBackgroundColor = route.color;
+            routeChartInstance.update();
+
+            document.getElementById('val-desnivel').innerText = route.metrics.desnivel;
+            document.getElementById('val-altitud').innerText = route.metrics.max;
+            document.getElementById('val-agua').innerText = route.metrics.agua;
+            
+            document.querySelectorAll('#val-desnivel, #val-altitud, #val-agua').forEach(box => {
+                box.parentElement.style.borderLeftColor = route.color;
+            });
+        }
+
+        // --- 7.4 LÓGICA IA COACH (GEMINI API) ---
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (e) {
+                    if (i === maxRetries - 1) throw e;
+                    await new Promise(resolve => setTimeout(resolve, delays[i]));
+                }
+            }
+        }
+
+        async function generatePlan() {
+            const distance = document.getElementById('ai-distance').value;
+            const level = document.getElementById('ai-level').value;
+            const btn = document.getElementById('ai-btn');
+            const loading = document.getElementById('ai-loading');
+            const resultBox = document.getElementById('ai-result');
+
+            btn.disabled = true; btn.classList.add('opacity-50');
+            resultBox.classList.add('hidden'); loading.classList.remove('hidden');
+
+            // Importante: Si subes esto a un repositorio público, es recomendable 
+            // usar Vercel Serverless Functions para ocultar esta API Key.
+            const apiKey = ""; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const prompt = `Eres un entrenador experto en atletismo. Un corredor hará "La Media del Zújar" (Distancia: ${distance}, Nivel: ${level}).
+            Genera un PLAN REALISTA DE 12 SEMANAS (Macrociclo) usando entrenamiento polarizado (Z2, series, tempo).
+            Devuelve SÓLO HTML puro usando clases Tailwind:
+            <h3 class="text-2xl font-display font-black text-brand-green uppercase mb-4 mt-8 border-b border-white/10 pb-2">
+            <h4 class="text-lg font-bold text-brand-orange uppercase mb-2 mt-4">
+            <p class="mb-4 text-gray-300">
+            <ul class="list-disc pl-6 mb-6 text-gray-400 marker:text-brand-green">
+            <strong class="text-white font-black bg-white/10 px-1.5 py-0.5 rounded text-sm">`;
+
+            try {
+                const data = await fetchWithRetry(url, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                    resultBox.innerHTML = text.replace(/```html\n?/g, '').replace(/```\n?/g, '');
+                    resultBox.classList.remove('hidden');
+                } else throw new Error("Respuesta vacía.");
+            } catch (error) {
+                resultBox.innerHTML = `<p class="text-red-500 font-bold border border-red-500 p-4 rounded bg-red-500/10">Error de conexión con la IA.</p>`;
+                resultBox.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden'); btn.disabled = false; btn.classList.remove('opacity-50');
+            }
+        }
+    </script>
+</body>
+</html>
