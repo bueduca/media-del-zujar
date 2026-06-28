@@ -84,6 +84,22 @@
 <body class="antialiased selection:bg-brand-green selection:text-black">
 
     <!-- ==========================================
+         MENÚ MÓVIL (Overlay)
+         ========================================== -->
+    <div id="mobile-menu" class="fixed inset-0 z-[100] bg-brand-black hidden flex-col items-center justify-center gap-8">
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-white">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <button onclick="navigate('home'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Inicio</button>
+        <button onclick="navigate('recorridos'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Recorridos</button>
+        <button onclick="navigate('entorno'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Entorno</button>
+        <button onclick="navigate('multimedia'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Multimedia</button>
+        <button onclick="navigate('reglamento'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Reglamento</button>
+        <button onclick="navigate('conocenos'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase">Conócenos</button>
+        <button onclick="navigate('coach'); toggleMobileMenu()" class="text-3xl font-display font-black uppercase text-brand-green">IA Coach</button>
+    </div>
+
+    <!-- ==========================================
          4. INTERFAZ: BARRA DE NAVEGACIÓN
          ========================================== -->
     <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
@@ -114,8 +130,8 @@
                 <span class="block skew-content">Inscríbete</span>
             </button>
 
-            <!-- Toggle Menú Móvil (Pendiente lógica JS) -->
-            <button class="lg:hidden text-white p-2">
+            <!-- Toggle Menú Móvil -->
+            <button onclick="toggleMobileMenu()" class="lg:hidden text-white p-2">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
         </div>
@@ -471,6 +487,13 @@
         // --- 7.1 INICIALIZACIÓN BÁSICA ---
         lucide.createIcons();
 
+        // Función para Menú Móvil
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+        }
+
         // Efecto visual en la barra de navegación al hacer scroll
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
@@ -605,8 +628,6 @@
             btn.disabled = true; btn.classList.add('opacity-50');
             resultBox.classList.add('hidden'); loading.classList.remove('hidden');
 
-            // Importante: Si subes esto a un repositorio público, es recomendable 
-            // usar Vercel Serverless Functions para ocultar esta API Key.
             const apiKey = ""; 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             
