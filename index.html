@@ -481,7 +481,7 @@
          ========================================== -->
     <footer class="border-t border-white/10 bg-brand-dark pt-0 pb-8 mt-auto flex flex-col">
         <div class="w-full flex overflow-hidden h-32 md:h-48 mb-12">
-            <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500">
+            <img src="assets/WhatsApp Image 2026-05-03 at 20.26.36 (2).jpeg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500">
             <img src="https://images.unsplash.com/photo-1530143311094-34d807799e8f" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500">
             <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500">
             <img src="https://images.unsplash.com/photo-1502224562085-639556652f33" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500">
@@ -540,17 +540,17 @@
         // --- 7.3 LÓGICA DE GRÁFICOS (CHART.JS) ---
         const routeData = {
             '21k': {
-                name: '21K Media Maratón', color: '#10b981', distance: 21.1,
+                name: 'Media Maratón', color: '#10b981', distance: 21.1,
                 data: [278, 275, 279, 282, 280, 284, 287, 291, 296, 298, 303, 294, 293, 291, 286, 272, 272, 271, 269, 268, 269, 273, 272, 270, 268, 262, 260, 258, 263, 267, 263, 257, 258, 261, 259, 260, 262, 266, 268, 273, 278],
                 metrics: { desnivel: '190m+', max: '303m', agua: '4 Puntos' }
             },
             '10k': {
-                name: '10K Desafío', color: '#f97316', distance: 10,
+                name: '10K "Desafío"', color: '#f97316', distance: 10,
                 data: [278, 275, 279, 282, 280, 284, 287, 291, 294, 296, 298, 303, 294, 293, 292, 291, 286, 280, 275, 272, 272, 271, 269, 269, 268, 269, 273, 274, 276, 273, 278],
                 metrics: { desnivel: '85m+', max: '303m', agua: '2 Puntos' }
             },
             '5k': {
-                name: '5K Popular', color: '#0ea5e9', distance: 5,
+                name: '5K "Popular"', color: '#0ea5e9', distance: 5,
                 data: [278, 275, 276, 279, 282, 280, 283, 286, 290, 294, 296, 298, 303, 296, 293, 291, 293, 287, 285, 278, 276, 275, 273, 275, 278],
                 metrics: { desnivel: '45m+', max: '303m', agua: '1 Punto' }
             }
@@ -654,8 +654,10 @@
             const apiKey = ""; 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             
-            const prompt = `Eres un entrenador experto en atletismo. Un corredor hará "La Media del Zújar" (Distancia: ${distance}, Nivel: ${level}).
-            Genera un PLAN REALISTA DE 12 SEMANAS (Macrociclo) usando entrenamiento polarizado (Z2, series, tempo).
+            const prompt = `Eres un entrenador experto en atletismo. El/La corredor/a podrá escoger la carrera para la que se quiere preparar y el nivel del que parte su forma física (Distancia: ${distance}, Nivel: ${level}).
+            Genera un PLAN REALISTA DE 12 SEMANAS (Macrociclo) usando entrenamiento polarizado (Z2, series, tempo). En función de la distancia y nivel, ajusta la intensidad y volumen de los entrenamientos. Incluye:
+            - Una tabla semanal con los entrenamientos de cada día (Lunes a Domingo) indicando la duración aproximada y la zona de entrenamiento (Z1, Z2, Z3, Z4, Z5).
+            - Consejos de nutrición y recuperación para cada semana.
             Devuelve SÓLO HTML puro usando clases Tailwind:
             <h3 class="text-2xl font-display font-black text-brand-green uppercase mb-4 mt-8 border-b border-white/10 pb-2">
             <h4 class="text-lg font-bold text-brand-orange uppercase mb-2 mt-4">
