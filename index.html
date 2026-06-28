@@ -84,6 +84,28 @@
 <body class="antialiased selection:bg-brand-green selection:text-black">
 
     <!-- ==========================================
+         PANEL DE ADMINISTRACIÓN OCULTO (MODO EDICIÓN VISUAL)
+         ========================================== -->
+    <div id="admin-toolbar" class="hidden fixed bottom-6 right-6 z-[200] bg-brand-dark border-2 border-brand-green p-6 rounded-2xl shadow-neon-green flex-col gap-4 max-w-sm">
+        <h3 class="font-display font-black text-xl text-brand-green flex items-center gap-2">
+            <i data-lucide="edit-3"></i> Modo Edición Activo
+        </h3>
+        <p class="text-sm text-gray-400">
+            1. Haz clic en <b>cualquier texto</b> para modificarlo (escribe como si fuera un Word).<br><br>
+            2. Haz clic en <b>cualquier imagen</b> (recuadro naranja) para cambiar su ruta.<br><br>
+            3. Navega por las pestañas para editar otras páginas.
+        </p>
+        <div class="flex gap-2 mt-2">
+            <button onclick="exportarWeb()" class="flex-1 bg-brand-green text-black font-bold py-2 rounded uppercase text-sm hover:bg-green-400 transition">
+                <i data-lucide="download" class="inline w-4 h-4 mb-1"></i> Descargar Web
+            </button>
+            <button onclick="toggleAdmin()" class="flex-1 border border-white/20 text-white font-bold py-2 rounded uppercase text-sm hover:bg-white/10 transition">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
          MENÚ MÓVIL (Overlay)
          ========================================== -->
     <div id="mobile-menu" class="fixed inset-0 z-[100] bg-brand-black hidden flex-col items-center justify-center gap-8">
@@ -146,7 +168,7 @@
         <section id="page-home" class="page-view active">
             <div class="relative min-h-[85vh] flex items-center group overflow-hidden">
                 <div class="absolute inset-0 z-0">
-                    <img src="148065.jpg" onerror="this.src='https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=2000&auto=format&fit=crop'" class="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition duration-1000" alt="Arco de salida">
+                    <img src="assets/148065.jpg" onerror="this.src='https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=2000&auto=format&fit=crop'" class="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition duration-1000" alt="Arco de salida">
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/70 to-transparent"></div>
                     <div class="absolute inset-0 bg-brand-green/10 mix-blend-overlay"></div>
                 </div>
@@ -155,10 +177,10 @@
                     <div class="max-w-3xl">
                         <div class="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark/80 backdrop-blur border border-white/10 rounded-full mb-6 font-display text-sm font-bold tracking-widest uppercase">
                             <span class="w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
-                            24 Noviembre, 2026
+                            <span>24 Noviembre, 2026</span>
                         </div>
                         <h1 class="font-display font-black text-6xl md:text-8xl leading-[0.9] uppercase tracking-tighter mb-6 drop-shadow-2xl">
-                            Domina el <br>
+                            <span>Domina el </span><br>
                             <span class="text-brand-green drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">Zújar</span>
                         </h1>
                         <p class="text-xl text-gray-300 mb-10 max-w-xl border-l-4 border-brand-blue pl-4 backdrop-blur-sm bg-black/20 p-2 rounded-r-lg">
@@ -184,10 +206,10 @@
                 <div class="max-w-7xl mx-auto px-4 py-8">
                     <p class="text-center font-display text-xs font-bold tracking-widest text-gray-500 uppercase mb-6">Impulsado por</p>
                     <div class="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="shield"></i> Ayto. Vva Serena</div>
-                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="zap"></i> Zújar Runners</div>
-                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="droplet"></i> AquaLife</div>
-                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="activity"></i> RunTech</div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="shield"></i> <span>Ayto. Vva Serena</span></div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="zap"></i> <span>Zújar Runners</span></div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="droplet"></i> <span>AquaLife</span></div>
+                        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="activity"></i> <span>RunTech</span></div>
                     </div>
                 </div>
             </div>
@@ -252,11 +274,11 @@
                     <!-- 5K -->
                     <div class="bg-brand-dark border border-white/10 p-8 rounded-2xl flex flex-col">
                         <div class="text-brand-blue font-display font-black text-2xl uppercase mb-2">5K Popular</div>
-                        <div class="text-5xl font-display font-black mb-6">12€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <div class="text-5xl font-display font-black mb-6"><span>12€</span> <span class="text-lg text-gray-500">/dorsal</span></div>
                         <ul class="space-y-4 text-gray-400 flex-1 mb-8">
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Bolsa del corredor básica</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Seguro de accidentes</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> Avituallamiento meta</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> <span>Bolsa del corredor básica</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> <span>Seguro de accidentes</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-blue"></i> <span>Avituallamiento meta</span></li>
                         </ul>
                         <button class="w-full bg-transparent border-2 border-brand-blue text-brand-blue py-3 font-display font-bold uppercase hover:bg-brand-blue hover:text-black transition">Seleccionar</button>
                     </div>
@@ -264,24 +286,24 @@
                     <div class="bg-gradient-to-b from-brand-green/20 to-brand-dark border border-brand-green p-8 rounded-2xl flex flex-col relative transform md:-translate-y-4 shadow-neon-green">
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-green text-black px-4 py-1 font-display font-bold text-xs uppercase tracking-widest rounded-full">La Reina</div>
                         <div class="text-brand-green font-display font-black text-2xl uppercase mb-2">21K Media Maratón</div>
-                        <div class="text-5xl font-display font-black mb-2">25€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <div class="text-5xl font-display font-black mb-2"><span>25€</span> <span class="text-lg text-gray-500">/dorsal</span></div>
                         <p class="text-xs text-brand-orange mb-6 font-bold">*Sube a 30€ el 1 de Noviembre</p>
                         <ul class="space-y-4 text-white flex-1 mb-8">
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Bolsa del corredor Premium</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Camiseta técnica Exclusiva</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> Medalla Finisher</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> 5 Avituallamientos en ruta</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> <span>Bolsa del corredor Premium</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> <span>Camiseta técnica Exclusiva</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> <span>Medalla Finisher</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-green"></i> <span>5 Avituallamientos en ruta</span></li>
                         </ul>
                         <button class="w-full bg-brand-green text-black py-4 font-display font-black uppercase text-lg hover:bg-green-400 transition shadow-lg">Inscribirse Ya</button>
                     </div>
                     <!-- 10K -->
                     <div class="bg-brand-dark border border-white/10 p-8 rounded-2xl flex flex-col">
                         <div class="text-brand-orange font-display font-black text-2xl uppercase mb-2">10K Desafío</div>
-                        <div class="text-5xl font-display font-black mb-6">18€ <span class="text-lg text-gray-500">/dorsal</span></div>
+                        <div class="text-5xl font-display font-black mb-6"><span>18€</span> <span class="text-lg text-gray-500">/dorsal</span></div>
                         <ul class="space-y-4 text-gray-400 flex-1 mb-8">
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> Bolsa del corredor Premium</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> Medalla Finisher</li>
-                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> 2 Avituallamientos</li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> <span>Bolsa del corredor Premium</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> <span>Medalla Finisher</span></li>
+                            <li class="flex gap-3"><i data-lucide="check" class="text-brand-orange"></i> <span>2 Avituallamientos</span></li>
                         </ul>
                         <button class="w-full bg-transparent border-2 border-brand-orange text-brand-orange py-3 font-display font-bold uppercase hover:bg-brand-orange hover:text-black transition">Seleccionar</button>
                     </div>
@@ -294,7 +316,9 @@
             <div class="max-w-7xl mx-auto px-4">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-6 text-brand-blue">Nuestro<br>Entorno</h2>
+                        <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-6 text-brand-blue">
+                            <span>Nuestro</span><br><span>Entorno</span>
+                        </h2>
                         <p class="text-xl text-gray-300 mb-6 leading-relaxed">
                             Nacida en Villanueva de la Serena, la prueba te ofrece dos caras. El 5K y 10K te sumergen en un circuito urbano, rápido y explosivo por las calles de la ciudad.
                         </p>
@@ -342,7 +366,7 @@
                 <div class="space-y-6">
                     <div class="bg-brand-dark p-6 rounded-xl border border-white/10 hover:border-brand-green/50 transition">
                         <h3 class="font-display font-bold text-xl text-brand-green mb-2 flex items-center gap-3">
-                            <span class="bg-brand-green text-black w-8 h-8 flex items-center justify-center rounded">1</span> Organización y Fecha
+                            <span class="bg-brand-green text-black w-8 h-8 flex items-center justify-center rounded">1</span> <span>Organización y Fecha</span>
                         </h3>
                         <p class="text-gray-400 leading-relaxed pl-11">La prueba se celebrará el 24 de Noviembre de 2026, organizada por el club Zújar Runners. El cronometraje oficial estará a cargo de empresa externa mediante chip desechable.</p>
                     </div>
@@ -354,23 +378,23 @@
         <!-- ================= VISTA: MULTIMEDIA ================= -->
         <section id="page-multimedia" class="page-view py-12">
             <div class="max-w-7xl mx-auto px-4">
-                <h2 class="font-display font-black text-5xl md:text-6xl uppercase tracking-tighter mb-4 text-white">Galería <span class="text-brand-orange">Épica</span></h2>
+                <h2 class="font-display font-black text-5xl md:text-6xl uppercase tracking-tighter mb-4 text-white"><span>Galería</span> <span class="text-brand-orange">Épica</span></h2>
                 <p class="text-gray-400 mb-10">Revive la crudeza y la gloria de ediciones pasadas con estas instantáneas reales.</p>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
-                        <img src="146127.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredora">
+                        <img src="assets/146127.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredora">
                     </div>
                     <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative md:col-span-2">
-                        <img src="148099.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-full h-full object-cover grayscale img-reveal" alt="Meta">
+                        <img src="assets/148099.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-full h-full object-cover grayscale img-reveal" alt="Meta">
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                             <div class="bg-black/50 p-2 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="camera" class="w-8 h-8 text-white"></i></div>
                         </div>
                     </div>
                     <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
-                        <img src="146339.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor esfuerzo">
+                        <img src="assets/146339.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor esfuerzo">
                     </div>
                     <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
-                        <img src="146260.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor en ruta">
+                        <img src="assets/146260.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-full h-full object-cover grayscale img-reveal" alt="Corredor en ruta">
                     </div>
                     <div class="aspect-square bg-brand-dark rounded-xl overflow-hidden group relative">
                         <div class="w-full h-full bg-brand-orange flex flex-col items-center justify-center p-6 text-center hover:bg-orange-500 transition cursor-pointer">
@@ -386,7 +410,7 @@
         <section id="page-conocenos" class="page-view py-12">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="text-center mb-16">
-                    <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-white">Conoce al <span class="text-brand-green">CD Inicia</span></h2>
+                    <h2 class="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-white"><span>Conoce al</span> <span class="text-brand-green">CD Inicia</span></h2>
                     <p class="text-gray-400 max-w-2xl mx-auto text-lg">El alma organizadora detrás de La Media del Zújar.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -396,7 +420,7 @@
                         <p class="text-gray-300 leading-relaxed mb-8">Con programas de "Formación en Valores", garantiza que las nuevas generaciones crezcan como personas solidarias y comprometidas.</p>
                         <div class="flex flex-col gap-4">
                             <div class="flex items-center gap-4 text-white font-bold bg-white/5 p-4 rounded-xl border border-white/10">
-                                <i data-lucide="award" class="w-6 h-6 text-brand-orange"></i> Más de 15 años forjando atletas.
+                                <i data-lucide="award" class="w-6 h-6 text-brand-orange"></i> <span>Más de 15 años forjando atletas.</span>
                             </div>
                         </div>
                     </div>
@@ -424,7 +448,7 @@
                 <div class="bg-brand-dark border border-brand-green/30 p-8 md:p-12 rounded-3xl relative overflow-hidden shadow-neon-green">
                     <div class="relative z-10 text-center mb-10">
                         <h2 class="text-4xl md:text-5xl font-display font-black uppercase text-brand-green mb-3">
-                            <i data-lucide="bot" class="inline-block w-10 h-10 mb-2"></i><br> Tu Entrenador IA
+                            <i data-lucide="bot" class="inline-block w-10 h-10 mb-2"></i><br> <span>Tu Entrenador IA</span>
                         </h2>
                         <p class="text-gray-400">Selecciona tu distancia y nivel. Genera una estrategia deportiva basada en el perfil técnico impulsada por Inteligencia Artificial.</p>
                     </div>
@@ -462,10 +486,10 @@
          ========================================== -->
     <footer class="border-t border-white/10 bg-brand-dark pt-0 pb-8 mt-auto flex flex-col">
         <div class="w-full flex overflow-hidden h-32 md:h-48 mb-12">
-            <img src="146221.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
-            <img src="148086.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
-            <img src="146254.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
-            <img src="148080.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="assets/146221.jpg" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="assets/148086.jpg" onerror="this.src='https://images.unsplash.com/photo-1530143311094-34d807799e8f'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="assets/146254.jpg" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
+            <img src="assets/148080.jpg" onerror="this.src='https://images.unsplash.com/photo-1502224562085-639556652f33'" class="w-1/4 h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-500 cursor-pointer">
         </div>
         <div class="max-w-7xl mx-auto px-4 w-full flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2 opacity-50">
@@ -474,8 +498,13 @@
                 </div>
                 <span class="font-display font-black tracking-wider uppercase text-white">La Media<span class="text-brand-green"> del Zújar</span></span>
             </div>
-            <div class="text-gray-600 text-sm font-display font-bold uppercase tracking-widest text-center">
-                &copy; 2026 Club Zújar Runners. La fuerza de Villanueva.
+            
+            <!-- EL BOTÓN SECRETO DEL ADMIN (El icono del engranaje) -->
+            <div class="text-gray-600 text-sm font-display font-bold uppercase tracking-widest text-center flex items-center justify-center gap-2">
+                <span>&copy; 2026 Club Zújar Runners. La fuerza de Villanueva.</span>
+                <button onclick="toggleAdmin()" class="hover:text-brand-green transition-colors" title="Modo Administrador">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
             </div>
         </div>
     </footer>
@@ -514,7 +543,6 @@
         }
 
         // --- 7.3 LÓGICA DE GRÁFICOS (CHART.JS) ---
-        // Datos reales pre-procesados de los archivos .gpx
         const routeData = {
             '21k': {
                 name: '21K Media Maratón', color: '#10b981', distance: 21.1,
@@ -657,6 +685,82 @@
             } finally {
                 loading.classList.add('hidden'); btn.disabled = false; btn.classList.remove('opacity-50');
             }
+        }
+
+        // --- 7.5 LÓGICA MODO ADMINISTRADOR (EDICIÓN VISUAL) ---
+        let adminMode = false;
+
+        function toggleAdmin() {
+            adminMode = !adminMode;
+            const toolbar = document.getElementById('admin-toolbar');
+            
+            if (adminMode) {
+                // 1. Mostrar el panel de control
+                toolbar.classList.remove('hidden');
+                toolbar.classList.add('flex');
+                
+                // 2. Hacer todos los textos editables visualmente
+                const textTags = 'h1, h2, h3, p, span, li';
+                document.querySelectorAll(textTags).forEach(el => {
+                    // Evitar que se edite el propio panel de admin o el menú de navegación principal
+                    if(!el.closest('#admin-toolbar') && !el.closest('nav') && !el.closest('#mobile-menu')) {
+                        el.setAttribute('contenteditable', 'true');
+                        // Añadir un borde punteado sutil para indicar que es editable
+                        el.classList.add('outline', 'outline-1', 'outline-dashed', 'outline-brand-green/50', 'hover:bg-brand-green/10', 'transition-all');
+                    }
+                });
+
+                // 3. Hacer las imágenes clickeables para cambiar la ruta
+                document.querySelectorAll('img').forEach(img => {
+                    img.classList.add('cursor-pointer', 'outline', 'outline-2', 'outline-brand-orange', 'hover:opacity-50', 'transition-all');
+                    img.onclick = function(e) {
+                        if(!adminMode) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Preguntar por la nueva ruta
+                        const newSrc = prompt('Introduce la ruta de la nueva imagen (ej. assets/mi-nueva-foto.jpg):', img.getAttribute('src'));
+                        if(newSrc) img.setAttribute('src', newSrc);
+                    };
+                });
+            } else {
+                // 1. Ocultar panel
+                toolbar.classList.add('hidden');
+                toolbar.classList.remove('flex');
+                
+                // 2. Quitar permisos de edición a los textos
+                document.querySelectorAll('[contenteditable]').forEach(el => {
+                    el.removeAttribute('contenteditable');
+                    el.classList.remove('outline', 'outline-1', 'outline-dashed', 'outline-brand-green/50', 'hover:bg-brand-green/10', 'transition-all');
+                });
+                
+                // 3. Quitar interactividad de administrador a las imágenes
+                document.querySelectorAll('img').forEach(img => {
+                    img.classList.remove('cursor-pointer', 'outline', 'outline-2', 'outline-brand-orange', 'hover:opacity-50', 'transition-all');
+                    img.onclick = null;
+                });
+            }
+        }
+
+        // Función para descargar el archivo HTML modificado
+        function exportarWeb() {
+            // Desactivamos el admin para que no se guarden los bordes punteados feos en el código
+            if(adminMode) toggleAdmin();
+            
+            // Damos 300ms de tiempo al navegador para que elimine visualmente las clases antes de copiar
+            setTimeout(() => {
+                const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], {type: "text/html;charset=utf-8"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "index.html"; // Se descargará con el mismo nombre
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert("✅ Archivo index.html modificado descargado con éxito.\n\nPara aplicar los cambios online: \n1. Reemplaza tu archivo index.html antiguo por este nuevo en la carpeta de tu PC.\n2. Abre la terminal en VS Code.\n3. Ejecuta:\n   git add .\n   git commit -m \"Actualización de textos/fotos\"\n   git push");
+            }, 300);
         }
     </script>
 </body>
